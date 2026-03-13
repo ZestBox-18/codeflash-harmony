@@ -1,17 +1,26 @@
 import { dbManager } from 'kite_utils';
 import { relationalStore } from '@kit.ArkData';
 
-export interface HistoryItem {
-  id: number;
-  type: 'push' | 'pull';
-  content: string;
-  timestamp: number;
-  device: string;
+@ObservedV2
+export class HistoryItem {
+  @Trace id: number = 0;
+  @Trace type: 'push' | 'pull' = 'push';
+  @Trace content: string = '';
+  @Trace timestamp: number = 0;
+  @Trace device: string = '';
+
+  constructor(id: number, type: 'push' | 'pull', content: string, timestamp: number, device: string) {
+    this.id = id;
+    this.type = type;
+    this.content = content;
+    this.timestamp = timestamp;
+    this.device = device;
+  }
 }
 
 export class HistoryManager {
-  private static readonly TABLE_NAME = 'history';
-  private static readonly MAX_HISTORY = 50;
+  static readonly TABLE_NAME = 'history';
+  static readonly MAX_HISTORY = 50;
 
   static async add(type: 'push' | 'pull', content: string, device: string): Promise<HistoryItem[]> {
     if (!dbManager.dbStore) {
@@ -48,13 +57,13 @@ export class HistoryManager {
       const resultSet = await dbManager.dbStore.query(predicates);
       const list: HistoryItem[] = [];
       while (resultSet.goToNextRow()) {
-        list.push({
-          id: resultSet.getLong(resultSet.getColumnIndex('id')),
-          type: resultSet.getString(resultSet.getColumnIndex('type')) as 'push' | 'pull',
-          content: resultSet.getString(resultSet.getColumnIndex('content')),
-          timestamp: resultSet.getLong(resultSet.getColumnIndex('timestamp')),
-          device: resultSet.getString(resultSet.getColumnIndex('device'))
-        });
+        list.push(new HistoryItem(
+          resultSet.getLong(resultSet.getColumnIndex('id')),
+          resultSet.getString(resultSet.getColumnIndex('type')) as 'push' | 'pull',
+          resultSet.getString(resultSet.getColumnIndex('content')),
+          resultSet.getLong(resultSet.getColumnIndex('timestamp')),
+          resultSet.getString(resultSet.getColumnIndex('device'))
+        ));
       }
       resultSet.close();
       return list;

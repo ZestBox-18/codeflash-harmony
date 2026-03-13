@@ -17,6 +17,10 @@ export class CommonConstants {
   static readonly AVOID_RECT_HEIGHT_TOP: string = "topRectHeight";
   static readonly AVOID_RECT_HEIGHT_BOTTOM: string = "bottomRectHeight";
   /**
+   * 颜色模式
+   */
+  static readonly CURRENT_COLOR_MODE: string = "currentColorMode";
+  /**
    * 页面
    */
   static readonly PAGE_INFOS: string = "pagesInfos";

@@ -1,13 +1,15 @@
-import { HistoryItem, HistoryManager } from '../model/History';
+import { HistoryItem } from '../model/History';
 import { pasteboard } from '@kit.BasicServicesKit';
 import { promptAction } from '@kit.ArkUI';
 import { ConfigurationConstant } from '@kit.AbilityKit';
 
-@Component
+@ComponentV2
 export struct HistoryView {
-  @Link historyList: HistoryItem[];
-  @Link serverIp: string;
-  @StorageProp('currentColorMode') currentMode: number = ConfigurationConstant.ColorMode.COLOR_MODE_LIGHT;
+  @Param historyList: HistoryItem[] = [];
+  @Param currentMode: number = ConfigurationConstant.ColorMode.COLOR_MODE_LIGHT;
+  
+  @Event onDelete: (id: number) => void = () => {};
+  @Event onClear: () => void = () => {};
 
   isDark() {
     return this.currentMode === ConfigurationConstant.ColorMode.COLOR_MODE_DARK;
@@ -42,12 +44,9 @@ export struct HistoryView {
                 { text: '取消', color: '#666666' },
                 { text: '清空', color: '#FF4D4F' }
               ]
-            }).then(async (resp) => {
+            }).then((resp) => {
               if (resp.index === 1) {
-                const newList = await HistoryManager.clear();
-                animateTo({ duration: 300, curve: Curve.EaseOut }, () => {
-                  this.historyList = newList;
-                })
+                this.onClear();
               }
             });
           })
@@ -149,11 +148,8 @@ export struct HistoryView {
             .fontColor(this.isDark() ? '#8E8E93' : '#666666')
         }
         .padding({ top: 6, bottom: 6, right: 12 })
-        .onClick(async () => {
-          const newList = await HistoryManager.delete(item.id);
-          animateTo({ duration: 300, curve: Curve.EaseOut }, () => {
-            this.historyList = newList;
-          })
+        .onClick(() => {
+          this.onDelete(item.id);
         })
 
         Blank()

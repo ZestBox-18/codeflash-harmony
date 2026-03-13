@@ -1,26 +1,23 @@
-import { pasteboard, BusinessError } from '@kit.BasicServicesKit';
-import { promptAction } from '@kit.ArkUI';
-import { JSON } from '@kit.ArkTS';
+import { pasteboard } from '@kit.BasicServicesKit';
 import { DiscoveredDevice } from '../model/Device';
 import { ConfigurationConstant } from '@kit.AbilityKit';
 
-@Component
+@ComponentV2
 export struct DashboardView {
-  @Link serverIp: string;
-  @Link isScanning: boolean;
-  @Link discoveredDevices: DiscoveredDevice[];
-  
-  @Link isAutoPushEnabled: boolean;
-  @StorageProp('currentColorMode') currentMode: number = ConfigurationConstant.ColorMode.COLOR_MODE_LIGHT;
+  @Param serverIp: string = '';
+  @Param isScanning: boolean = false;
+  @Param discoveredDevices: DiscoveredDevice[] = [];
+  @Param isAutoPushEnabled: boolean = false;
+  @Param currentMode: number = ConfigurationConstant.ColorMode.COLOR_MODE_LIGHT;
   
   // 回调函数
-  onScan: () => void = () => {};
-  onPush: (text: string) => void = () => {};
-  onPull: () => void = () => {};
-  onSelectDevice: (ip: string) => void = () => {};
-  onAutoPushChange: (isOn: boolean) => void = () => {};
+  @Event onScan: () => void = () => {};
+  @Event onPush: (text: string) => void = () => {};
+  @Event onPull: () => void = () => {};
+  @Event onSelectDevice: (ip: string) => void = () => {};
+  @Event onAutoPushChange: (isOn: boolean) => void = () => {};
 
-  @State manualIp: string = '';
+  @Local manualIp: string = '';
 
   aboutToAppear() {
     this.manualIp = '';
@@ -220,7 +217,6 @@ export struct DashboardView {
               .selectedColor('#2FB04A')
               .switchPointColor('#FFFFFF')
               .onChange((isOn: boolean) => {
-                this.isAutoPushEnabled = isOn;
                 this.onAutoPushChange(isOn);
               })
           }

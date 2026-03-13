@@ -13,22 +13,29 @@ import { LengthMetrics } from '@kit.ArkUI';
 import { HdsNavigation, ScrollEffectType, TextStyleMode } from '@kit.UIDesignKit';
 import { CommonConstants } from '../constants/CommonConstants';
 
+
+
+interface DiscoverMsg {
+  ip: string;
+  hostname?: string;
+}
+
 @Entry
-@Component
+@ComponentV2
 struct Index {
-  @StorageProp('currentColorMode') currentMode: number = ConfigurationConstant.ColorMode.COLOR_MODE_LIGHT;
-  @State serverIp: string = '';
-  @State isPushing: boolean = false;
-  @State isPulling: boolean = false;
-  @State isScanning: boolean = false;
-  @State statusMsg: string = '准备就绪';
-  @State clipboardContent: string = '';
-  @State historyList: HistoryItem[] = [];
-  @State discoveredDevices: DiscoveredDevice[] = [];
-  @StorageLink(CommonConstants.AVOID_RECT_HEIGHT_TOP) topRectHeight: number = 0
-  @StorageLink(CommonConstants.AVOID_RECT_HEIGHT_BOTTOM) bottomRectHeight: number = 0
+  @Local currentMode: number = ConfigurationConstant.ColorMode.COLOR_MODE_LIGHT;
+  @Local serverIp: string = '';
+  @Local isPushing: boolean = false;
+  @Local isPulling: boolean = false;
+  @Local isScanning: boolean = false;
+  @Local statusMsg: string = '准备就绪';
+  @Local clipboardContent: string = '';
+  @Local historyList: HistoryItem[] = [];
+  @Local discoveredDevices: DiscoveredDevice[] = [];
+  @Local topRectHeight: number = 0;
+  @Local bottomRectHeight: number = 0;
   UIcontext: UIContext = this.getUIContext();
-  @State isAutoPushEnabled: boolean = false;
+  @Local isAutoPushEnabled: boolean = false;
   private context = getContext(this) as common.UIAbilityContext;
   private pref: preferences.Preferences | null = null;
   private pushHttpRequest: http.HttpRequest | null = null;
@@ -37,11 +44,15 @@ struct Index {
   private targetId: string = 'bindMenu'
 
   async aboutToAppear() {
-    /**
-     * 将AppStorage中的安全区高度进行单位转化
-     */
+    // 手动获取 AppStorage 的值
+    this.currentMode = AppStorage.get(CommonConstants.CURRENT_COLOR_MODE) || ConfigurationConstant.ColorMode.COLOR_MODE_LIGHT;
+    this.topRectHeight = AppStorage.get(CommonConstants.AVOID_RECT_HEIGHT_TOP) || 0;
+    this.bottomRectHeight = AppStorage.get(CommonConstants.AVOID_RECT_HEIGHT_BOTTOM) || 0;
+
+    // 将AppStorage中的安全区高度进行单位转化
     if (this.topRectHeight > 0) {
       let topRectHeight = this.UIcontext.px2vp(this.topRectHeight)
+      // 注意：这里更新 AppStorage 不会自动触发 V2 组件的重绘，但我们更新了 this.topRectHeight
       AppStorage.setOrCreate(CommonConstants.AVOID_RECT_HEIGHT_TOP, topRectHeight);
       this.topRectHeight = topRectHeight
     }
@@ -114,9 +125,7 @@ struct Index {
   async checkConnection(ip: string): Promise<boolean> {
     try {
       let httpRequest = http.createHttp();
-      // 尝试访问一个轻量级接口或者只是 ping，这里用 pull 接口简单测试，实际应该有个 /ping 接口
-      // 由于没有 /ping，我们尝试 /get-from-computer 但不处理结果，或者假设服务器有根路径
-      // 为了安全和简单，我们尝试请求 /get-from-computer，设置很短的超时
+      // 尝试访问一个轻量级接口或者只是 ping，这里用 pull 接口简单测试
       const response = await httpRequest.request(`http://${ip}:56669/get-from-computer`, {
         method: http.RequestMethod.GET,
         connectTimeout: 1000, // 1秒超时
@@ -130,12 +139,16 @@ struct Index {
   }
 
   async saveIp(ip: string) {
-    animateTo({ duration: 300, curve: Curve.EaseOut }, () => {
+    this.UIcontext.animateTo({ duration: 300, curve: Curve.EaseOut }, () => {
       this.serverIp = ip;
     })
     if (this.pref) {
-      await this.pref.put('server_ip', ip);
-      await this.pref.flush();
+      try {
+        await this.pref.put('server_ip', ip);
+        await this.pref.flush();
+
+      } catch (error) {
+      }
     }
   }
 
@@ -147,13 +160,27 @@ struct Index {
     }
   }
 
+  async deleteHistory(id: number) {
+    const newList = await HistoryManager.delete(id);
+    this.UIcontext.animateTo({ duration: 300, curve: Curve.EaseOut }, () => {
+      this.historyList = newList;
+    })
+  }
+
+  async clearHistory() {
+    const newList = await HistoryManager.clear();
+    this.UIcontext.animateTo({ duration: 300, curve: Curve.EaseOut }, () => {
+      this.historyList = newList;
+    })
+  }
+
   // 扫描局域网电脑
   async scanComputer() {
-    animateTo({ duration: 300, curve: Curve.EaseOut }, () => {
+    this.UIcontext.animateTo({ duration: 300, curve: Curve.EaseOut }, () => {
       this.isScanning = true;
     })
     this.statusMsg = '正在扫描电脑...';
-    this.discoveredDevices = []; // 清空之前的列表
+    this.discoveredDevices = [];
 
     if (this.udpSocket) {
       try {
@@ -164,7 +191,6 @@ struct Index {
     }
 
     this.udpSocket = socket.constructUDPSocketInstance();
-    // Local reference for closure
     const udpSocket: socket.UDPSocket = this.udpSocket;
 
     try {
@@ -191,16 +217,12 @@ struct Index {
               // 避免重复添加
               const exists = this.discoveredDevices.some((d: DiscoveredDevice) => d.ip === ip);
               if (!exists) {
-                const device: DiscoveredDevice = {
-                  ip: ip,
-                  hostname: obj.hostname || ip
-                };
-                // Create a new array to trigger UI update
+                const device = new DiscoveredDevice(ip, obj.hostname || ip);
                 let newDevices = new Array<DiscoveredDevice>();
                 this.discoveredDevices.forEach(d => newDevices.push(d));
                 newDevices.push(device);
 
-                animateTo({ duration: 300, curve: Curve.EaseOut }, () => {
+                this.UIcontext.animateTo({ duration: 300, curve: Curve.EaseOut }, () => {
                   this.discoveredDevices = newDevices;
                 })
 
@@ -246,7 +268,6 @@ struct Index {
         try {
           await udpSocket.send(options);
         } catch (err) {
-          // 重试逻辑 (简化版，复用逻辑太长)
           console.error('UDP Send Error: ' + JSON.stringify(err));
         }
       }
@@ -254,7 +275,7 @@ struct Index {
       // 5秒后超时
       setTimeout(() => {
         if (this.isScanning) {
-          animateTo({ duration: 300, curve: Curve.EaseOut }, () => {
+          this.UIcontext.animateTo({ duration: 300, curve: Curve.EaseOut }, () => {
             this.isScanning = false;
           })
           this.statusMsg = '扫描结束';
@@ -267,7 +288,7 @@ struct Index {
 
     } catch (err) {
       console.error('UDP Error: ' + JSON.stringify(err));
-      animateTo({ duration: 300, curve: Curve.EaseOut }, () => {
+      this.UIcontext.animateTo({ duration: 300, curve: Curve.EaseOut }, () => {
         this.isScanning = false;
       })
       this.statusMsg = '扫描失败';
@@ -331,7 +352,7 @@ struct Index {
         }
         // 添加历史
         const newList = await HistoryManager.add('push', text, '我的电脑');
-        animateTo({ duration: 300, curve: Curve.EaseOut }, () => {
+        this.UIcontext.animateTo({ duration: 300, curve: Curve.EaseOut }, () => {
           this.historyList = newList;
         })
       } else {
@@ -345,7 +366,6 @@ struct Index {
         promptAction.showToast({ message: '网络错误' });
       } catch (error) {
       }
-      this.saveIp('');
     } finally {
       this.isPushing = false;
       if (this.pushHttpRequest) {
@@ -391,7 +411,7 @@ struct Index {
 
         // 添加历史
         const newList = await HistoryManager.add('pull', text, '我的电脑');
-        animateTo({ duration: 300, curve: Curve.EaseOut }, () => {
+        this.UIcontext.animateTo({ duration: 300, curve: Curve.EaseOut }, () => {
           this.historyList = newList;
         })
       } else {
@@ -405,7 +425,6 @@ struct Index {
         promptAction.showToast({ message: '连接错误' });
       } catch (error) {
       }
-      this.saveIp('');
     } finally {
       this.isPulling = false;
       if (this.pullHttpRequest) {
@@ -429,6 +448,7 @@ struct Index {
             isScanning: this.isScanning,
             discoveredDevices: this.discoveredDevices,
             isAutoPushEnabled: this.isAutoPushEnabled,
+            currentMode: this.currentMode,
             onScan: (): void => {
               this.scanComputer()
             },
@@ -449,7 +469,13 @@ struct Index {
           // 2. 历史记录 (Bottom Section)
           HistoryView({
             historyList: this.historyList,
-            serverIp: this.serverIp
+            currentMode: this.currentMode,
+            onDelete: (id: number): void => {
+              this.deleteHistory(id)
+            },
+            onClear: (): void => {
+              this.clearHistory()
+            }
           })
         }
         .width('100%')
@@ -511,6 +537,7 @@ struct Index {
             },
             backIconStyle: {
               backgroundColor: this.isDark() ? '#2C2C2E' : $r('sys.color.comp_background_tertiary'),
+              iconColor: this.isDark() ? '#FFFFFF' : $r('sys.color.icon_primary')
             }
           }
         }
@@ -538,7 +565,3 @@ struct Index {
   }
 }
 
-interface DiscoverMsg {
-  ip: string;
-  hostname?: string;
-}
