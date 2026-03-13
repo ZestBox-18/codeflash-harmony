@@ -1,19 +1,13 @@
 import { HistoryItem } from '../model/History';
 import { pasteboard } from '@kit.BasicServicesKit';
 import { promptAction } from '@kit.ArkUI';
-import { ConfigurationConstant } from '@kit.AbilityKit';
 
 @ComponentV2
 export struct HistoryView {
   @Param historyList: HistoryItem[] = [];
-  @Param currentMode: number = ConfigurationConstant.ColorMode.COLOR_MODE_LIGHT;
   
   @Event onDelete: (id: number) => void = () => {};
   @Event onClear: () => void = () => {};
-
-  isDark() {
-    return this.currentMode === ConfigurationConstant.ColorMode.COLOR_MODE_DARK;
-  }
 
   build() {
     Column() {
@@ -22,7 +16,7 @@ export struct HistoryView {
         Text('传输历史')
           .fontSize(20)
           .fontWeight(FontWeight.Bold)
-          .fontColor(this.isDark() ? '#FFFFFF' : '#191919')
+          .fontColor($r('app.color.text_primary'))
         
         Blank()
         
@@ -30,11 +24,11 @@ export struct HistoryView {
           Row() {
             SymbolGlyph($r('sys.symbol.trash'))
               .fontSize(16)
-              .fontColor(this.isDark() ? ['#8E8E93'] : ['#999999'])
+              .fontColor([$r('app.color.text_secondary')])
               .margin({ right: 4 })
             Text('清空')
               .fontSize(14)
-              .fontColor(this.isDark() ? '#8E8E93' : '#999999')
+              .fontColor($r('app.color.text_secondary'))
           }
           .onClick(() => {
             promptAction.showDialog({
@@ -51,23 +45,23 @@ export struct HistoryView {
             });
           })
           .padding({ top: 8, bottom: 8, left: 12, right: 12 })
-          .backgroundColor(this.isDark() ? '#2C2C2E' : '#F0F2F5')
+          .backgroundColor($r('app.color.action_bg'))
           .borderRadius(20)
         }
       }
       .width('100%')
       .padding({ top: 16, bottom: 16, left: 20, right: 20 })
-      .backgroundColor(this.isDark() ? '#000000' : '#F5F7FA')
+      .backgroundColor($r('app.color.page_background'))
 
       if (this.historyList.length === 0) {
         Column() {
           SymbolGlyph($r('sys.symbol.clock'))
             .fontSize(48)
-            .fontColor(this.isDark() ? ['#3A3A3C'] : ['#DDDDDD'])
+            .fontColor([$r('app.color.text_secondary')])
             .margin({ bottom: 12 })
           Text('暂无传输记录')
             .fontSize(14)
-            .fontColor(this.isDark() ? '#8E8E93' : '#999999')
+            .fontColor($r('app.color.text_secondary'))
         }
         .width('100%')
         .padding({ top: 60, bottom: 60 })
@@ -83,7 +77,7 @@ export struct HistoryView {
       }
     }
     .width('100%')
-    .backgroundColor(this.isDark() ? '#000000' : '#F5F7FA')
+    .backgroundColor($r('app.color.page_background'))
   }
 
   @Builder HistoryItemBuilder(item: HistoryItem) {
@@ -94,8 +88,8 @@ export struct HistoryView {
         Stack() {
           Circle({ width: 36, height: 36 })
             .fill(item.type === 'push' 
-              ? (this.isDark() ? 'rgba(47, 176, 74, 0.2)' : '#E6FFED') 
-              : (this.isDark() ? 'rgba(10, 89, 247, 0.2)' : '#E6F0FF'))
+              ? $r('app.color.icon_bg_push')
+              : $r('app.color.icon_bg_pull'))
           SymbolGlyph(item.type === 'push' ? $r('sys.symbol.arrow_up') : $r('sys.symbol.arrow_down'))
             .fontSize(20)
             .fontColor([item.type === 'push' ? '#2FB04A' : '#0A59F7'])
@@ -107,10 +101,10 @@ export struct HistoryView {
           Text(item.type === 'push' ? `发送至 ${item.device}` : `来自 ${item.device}`)
             .fontSize(15)
             .fontWeight(FontWeight.Medium)
-            .fontColor(this.isDark() ? '#FFFFFF' : '#191919')
+            .fontColor($r('app.color.text_primary'))
           Text(this.formatTime(item.timestamp))
             .fontSize(12)
-            .fontColor(this.isDark() ? '#8E8E93' : '#999999')
+            .fontColor($r('app.color.text_secondary'))
         }
         .alignItems(HorizontalAlign.Start)
         .layoutWeight(1)
@@ -121,7 +115,7 @@ export struct HistoryView {
       // Content
       Text(item.content)
         .fontSize(15)
-        .fontColor(this.isDark() ? '#CCCCCC' : '#333333')
+        .fontColor($r('app.color.text_content'))
         .maxLines(4)
         .textOverflow({ overflow: TextOverflow.Ellipsis })
         .width('100%')
@@ -131,7 +125,7 @@ export struct HistoryView {
 
       // Divider
       Divider()
-        .color(this.isDark() ? '#38383A' : '#F0F0F0')
+        .color($r('app.color.divider_color'))
         .strokeWidth(0.5)
         .margin({ bottom: 12 })
 
@@ -141,11 +135,11 @@ export struct HistoryView {
         Row() {
           SymbolGlyph($r('sys.symbol.trash'))
             .fontSize(16)
-            .fontColor(this.isDark() ? ['#8E8E93'] : ['#999999'])
+            .fontColor([$r('app.color.text_secondary')])
             .margin({ right: 4 })
           Text('删除')
             .fontSize(13)
-            .fontColor(this.isDark() ? '#8E8E93' : '#666666')
+            .fontColor($r('app.color.text_secondary'))
         }
         .padding({ top: 6, bottom: 6, right: 12 })
         .onClick(() => {
@@ -189,9 +183,9 @@ export struct HistoryView {
       .alignItems(VerticalAlign.Center)
     }
     .padding(16)
-    .backgroundColor(this.isDark() ? '#1C1C1E' : Color.White)
+    .backgroundColor($r('app.color.card_background'))
     .borderRadius(16)
-    .shadow({ radius: 8, color: this.isDark() ? 'rgba(0,0,0,0.2)' : 'rgba(0,0,0,0.05)', offsetY: 2 })
+    .shadow(ShadowStyle.OUTER_DEFAULT_SM)
     .transition(TransitionEffect.OPACITY.combine(TransitionEffect.translate({ y: 20 })).animation({ duration: 300 }))
   }
 

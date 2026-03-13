@@ -1,6 +1,5 @@
 import { pasteboard } from '@kit.BasicServicesKit';
 import { DiscoveredDevice } from '../model/Device';
-import { ConfigurationConstant } from '@kit.AbilityKit';
 
 @ComponentV2
 export struct DashboardView {
@@ -8,7 +7,6 @@ export struct DashboardView {
   @Param isScanning: boolean = false;
   @Param discoveredDevices: DiscoveredDevice[] = [];
   @Param isAutoPushEnabled: boolean = false;
-  @Param currentMode: number = ConfigurationConstant.ColorMode.COLOR_MODE_LIGHT;
   
   // 回调函数
   @Event onScan: () => void = () => {};
@@ -23,10 +21,6 @@ export struct DashboardView {
     this.manualIp = '';
   }
 
-  isDark() {
-    return this.currentMode === ConfigurationConstant.ColorMode.COLOR_MODE_DARK;
-  }
-
   build() {
     Column() {
       // Header removed as it is now in Navigation title
@@ -38,7 +32,7 @@ export struct DashboardView {
              Text('连接设置')
               .fontSize(16)
               .fontWeight(FontWeight.Bold)
-              .fontColor(this.isDark() ? '#FFFFFF' : '#191919')
+              .fontColor($r('app.color.text_primary'))
              
              Blank()
              
@@ -83,10 +77,10 @@ export struct DashboardView {
                     Text('已保存设备')
                       .fontSize(15)
                       .fontWeight(FontWeight.Medium)
-                      .fontColor(this.isDark() ? '#FFFFFF' : '#191919')
+                      .fontColor($r('app.color.text_primary'))
                     Text(this.serverIp)
                       .fontSize(12)
-                      .fontColor(this.isDark() ? '#8E8E93' : '#999999')
+                      .fontColor($r('app.color.text_secondary'))
                       .margin({ top: 2 })
                   }
                   .alignItems(HorizontalAlign.Start)
@@ -98,7 +92,7 @@ export struct DashboardView {
                  }
                  .width('100%')
                  .padding(12)
-                 .backgroundColor(this.isDark() ? '#2C2C2E' : '#F9F9F9')
+                 .backgroundColor($r('app.color.block_background'))
                  .borderRadius(12)
               }
 
@@ -113,10 +107,10 @@ export struct DashboardView {
                     Text(device.hostname)
                       .fontSize(15)
                       .fontWeight(FontWeight.Medium)
-                      .fontColor(this.isDark() ? '#FFFFFF' : '#191919')
+                      .fontColor($r('app.color.text_primary'))
                     Text(device.ip)
                       .fontSize(12)
-                      .fontColor(this.isDark() ? '#8E8E93' : '#999999')
+                      .fontColor($r('app.color.text_secondary'))
                       .margin({ top: 2 })
                   }
                   .alignItems(HorizontalAlign.Start)
@@ -130,7 +124,7 @@ export struct DashboardView {
                     Button('连接')
                       .fontSize(12)
                       .height(28)
-                      .backgroundColor(this.isDark() ? '#1C1C1E' : '#E6F0FF')
+                      .backgroundColor($r('app.color.connect_button_bg'))
                       .fontColor('#2FB04A')
                       .onClick(() => {
                         this.onSelectDevice(device.ip);
@@ -139,7 +133,7 @@ export struct DashboardView {
                 }
                 .width('100%')
                 .padding(12)
-                .backgroundColor(this.isDark() ? '#2C2C2E' : '#F9F9F9')
+                .backgroundColor($r('app.color.block_background'))
                 .borderRadius(12)
                 .onClick(() => {
                    this.onSelectDevice(device.ip);
@@ -153,7 +147,7 @@ export struct DashboardView {
              Column() {
                Text('未发现设备，请确保在同一局域网')
                  .fontSize(12)
-                 .fontColor(this.isDark() ? '#8E8E93' : '#999999')
+                 .fontColor($r('app.color.text_secondary'))
                  .margin({ bottom: 8 })
              }
              .width('100%')
@@ -165,13 +159,13 @@ export struct DashboardView {
           Row() {
             TextInput({ placeholder: '手动输入 IP 地址...', text: this.manualIp })
               .fontSize(14)
-              .fontColor(this.isDark() ? '#FFFFFF' : '#191919')
-              .placeholderColor(this.isDark() ? '#636366' : '#999999')
+              .fontColor($r('app.color.text_primary'))
+              .placeholderColor($r('app.color.text_secondary'))
               .caretColor('#2FB04A')
-              .backgroundColor(this.isDark() ? '#000000' : '#F5F7FA')
+              .backgroundColor($r('app.color.page_background'))
               .height(44)
               .borderRadius(12)
-              .border({ width: 1, color: this.isDark() ? '#2C2C2E' : '#E5E5EA' }) // Consistent border
+              .border({ width: 1, color: $r('app.color.border_color') }) // Consistent border
               .layoutWeight(1)
               .padding({ left: 12, right: 12 })
               .onChange((value) => {
@@ -202,10 +196,10 @@ export struct DashboardView {
                 Text('自动推送')
                   .fontSize(15)
                   .fontWeight(FontWeight.Medium)
-                  .fontColor(this.isDark() ? '#FFFFFF' : '#191919')
+                  .fontColor($r('app.color.text_primary'))
                 Text('连接后自动推送剪贴板内容')
                   .fontSize(12)
-                  .fontColor(this.isDark() ? '#8E8E93' : '#999999')
+                  .fontColor($r('app.color.text_secondary'))
                   .margin({ top: 2 })
               }
               .alignItems(HorizontalAlign.Start)
@@ -225,7 +219,7 @@ export struct DashboardView {
 
         }
         .padding(20)
-        .backgroundColor(this.isDark() ? '#1C1C1E' : Color.White)
+        .backgroundColor($r('app.color.card_background'))
         .borderRadius(24)
         .shadow(ShadowStyle.OUTER_DEFAULT_SM)
         .margin({ bottom: 24 })
@@ -253,17 +247,17 @@ export struct DashboardView {
             Text('从电脑获取')
               .fontSize(16)
               .fontWeight(FontWeight.Medium)
-              .fontColor(this.isDark() ? '#FFFFFF' : '#191919')
+              .fontColor($r('app.color.text_primary'))
             
             Text('点击同步')
               .fontSize(12)
-              .fontColor(this.isDark() ? '#8E8E93' : '#999999')
+              .fontColor($r('app.color.text_secondary'))
               .margin({ top: 4 })
           }
           .layoutWeight(1)
           .height(160)
           .justifyContent(FlexAlign.Center)
-          .backgroundColor(this.isDark() ? '#1C1C1E' : Color.White)
+          .backgroundColor($r('app.color.card_background'))
           .borderRadius(24)
           .shadow(ShadowStyle.OUTER_DEFAULT_SM)
           .margin({ right: 12 })
@@ -293,17 +287,17 @@ export struct DashboardView {
              Text('推送到电脑')
               .fontSize(16)
               .fontWeight(FontWeight.Medium)
-              .fontColor(this.isDark() ? '#FFFFFF' : '#191919')
+              .fontColor($r('app.color.text_primary'))
 
             Text('点击发送')
               .fontSize(12)
-              .fontColor(this.isDark() ? '#8E8E93' : '#999999')
+              .fontColor($r('app.color.text_secondary'))
               .margin({ top: 4 })
           }
           .layoutWeight(1)
           .height(160)
           .justifyContent(FlexAlign.Center)
-          .backgroundColor(this.isDark() ? '#1C1C1E' : Color.White)
+          .backgroundColor($r('app.color.card_background'))
           .borderRadius(24)
           .shadow(ShadowStyle.OUTER_DEFAULT_SM)
           .margin({ left: 12 })
@@ -315,6 +309,6 @@ export struct DashboardView {
       .width('100%')
     }
     .width('100%')
-    .backgroundColor(this.isDark() ? '#000000' : '#F5F7FA')
+    .backgroundColor($r('app.color.page_background'))
   }
 }

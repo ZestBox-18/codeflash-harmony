@@ -23,7 +23,6 @@ interface DiscoverMsg {
 @Entry
 @ComponentV2
 struct Index {
-  @Local currentMode: number = ConfigurationConstant.ColorMode.COLOR_MODE_LIGHT;
   @Local serverIp: string = '';
   @Local isPushing: boolean = false;
   @Local isPulling: boolean = false;
@@ -44,8 +43,6 @@ struct Index {
   private targetId: string = 'bindMenu'
 
   async aboutToAppear() {
-    // 手动获取 AppStorage 的值
-    this.currentMode = AppStorage.get(CommonConstants.CURRENT_COLOR_MODE) || ConfigurationConstant.ColorMode.COLOR_MODE_LIGHT;
     this.topRectHeight = AppStorage.get(CommonConstants.AVOID_RECT_HEIGHT_TOP) || 0;
     this.bottomRectHeight = AppStorage.get(CommonConstants.AVOID_RECT_HEIGHT_BOTTOM) || 0;
 
@@ -434,10 +431,6 @@ struct Index {
     }
   }
 
-  isDark() {
-    return this.currentMode === ConfigurationConstant.ColorMode.COLOR_MODE_DARK;
-  }
-
   build() {
     HdsNavigation() {
       Scroll() {
@@ -448,7 +441,6 @@ struct Index {
             isScanning: this.isScanning,
             discoveredDevices: this.discoveredDevices,
             isAutoPushEnabled: this.isAutoPushEnabled,
-            currentMode: this.currentMode,
             onScan: (): void => {
               this.scanComputer()
             },
@@ -469,7 +461,6 @@ struct Index {
           // 2. 历史记录 (Bottom Section)
           HistoryView({
             historyList: this.historyList,
-            currentMode: this.currentMode,
             onDelete: (id: number): void => {
               this.deleteHistory(id)
             },
@@ -503,41 +494,41 @@ struct Index {
           // 内容区滚动前初始样式设置
           backgroundStyle: {
             // 标题栏背板样式设置
-            backgroundColor: this.isDark() ? '#1C1C1E' : $r('sys.color.ohos_id_color_background'),
+            backgroundColor: $r('app.color.title_bar_bg'),
           },
           contentStyle: {
             // 标题栏内容区样式设置，包括标题区域，菜单区域，返回按钮区域
             titleStyle: {
-              mainTitleColor: this.isDark() ? '#FFFFFF' : $r('sys.color.font_primary'),
-              subTitleColor: this.isDark() ? '#8E8E93' : $r('sys.color.font_secondary')
+              mainTitleColor: $r('app.color.text_primary'),
+              subTitleColor: $r('app.color.text_secondary')
             },
             menuStyle: {
-              backgroundColor: this.isDark() ? '#2C2C2E' : $r('sys.color.comp_background_tertiary'),
-              textColor: this.serverIp ? '#2FB04A' : (this.isDark() ? '#8E8E93' : '#999999')
+              backgroundColor: $r('app.color.action_bg'),
+              textColor: this.serverIp ? '#2FB04A' : $r('app.color.text_secondary')
             },
             backIconStyle: {
-              backgroundColor: this.isDark() ? '#2C2C2E' : $r('sys.color.comp_background_tertiary'),
-              iconColor: this.isDark() ? '#FFFFFF' : $r('sys.color.icon_primary')
+              backgroundColor: $r('app.color.action_bg'),
+              iconColor: $r('app.color.text_primary')
             }
           }
         },
         scrollEffectStyle: {
           // 内容区滚动超过blurEffectiveEndOffset后样式设置
           backgroundStyle: {
-            backgroundColor: this.isDark() ? '#1C1C1E' : $r('sys.color.ohos_id_color_background_transparent'),
+            backgroundColor: $r('app.color.title_bar_bg'),
           },
           contentStyle: {
             titleStyle: {
-              mainTitleColor: this.isDark() ? '#FFFFFF' : $r('sys.color.font_primary'),
-              subTitleColor: this.isDark() ? '#8E8E93' : $r('sys.color.font_secondary'),
+              mainTitleColor: $r('app.color.text_primary'),
+              subTitleColor: $r('app.color.text_secondary'),
             },
             menuStyle: {
-              backgroundColor: this.isDark() ? '#2C2C2E' : $r('sys.color.comp_background_tertiary'),
-              textColor: this.serverIp ? '#2FB04A' : (this.isDark() ? '#8E8E93' : '#999999')
+              backgroundColor: $r('app.color.action_bg'),
+              textColor: this.serverIp ? '#2FB04A' : $r('app.color.text_secondary')
             },
             backIconStyle: {
-              backgroundColor: this.isDark() ? '#2C2C2E' : $r('sys.color.comp_background_tertiary'),
-              iconColor: this.isDark() ? '#FFFFFF' : $r('sys.color.icon_primary')
+              backgroundColor: $r('app.color.action_bg'),
+              iconColor: $r('app.color.text_primary')
             }
           }
         }
@@ -560,8 +551,7 @@ struct Index {
       },
       avoidLayoutSafeArea: true
     })
-    .backgroundColor(this.isDark() ? '#000000' : '#F5F7FA')
+    .backgroundColor($r('app.color.page_background'))
     .hideBackButton(true)
   }
 }
-
