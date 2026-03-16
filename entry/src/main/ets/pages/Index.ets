@@ -4,16 +4,25 @@ import { promptAction } from '@kit.ArkUI';
 import { preferences } from '@kit.ArkData';
 import { abilityAccessCtrl, common, ConfigurationConstant } from '@kit.AbilityKit';
 import { util } from '@kit.ArkTS';
+import bundleManager from '@ohos.bundle.bundleManager';
 import { DashboardView } from '../view/DashboardView';
 import { HistoryView } from '../view/HistoryView';
 import { HistoryItem, HistoryManager } from '../model/History';
 import { DiscoveredDevice } from '../model/Device';
 
 import { LengthMetrics } from '@kit.ArkUI';
-import { HdsNavigation, ScrollEffectType, TextStyleMode } from '@kit.UIDesignKit';
+import { HdsNavDestination, HdsNavigation,
+  HdsNavigationTitleMode,
+  IconStyleMode, ScrollEffectType, TextStyleMode } from '@kit.UIDesignKit';
 import { CommonConstants } from '../constants/CommonConstants';
 
 
+
+import { SettingsView } from '../view/SettingsView';
+import { RouterUrlConstants } from '../constants/RouterUrlConstants';
+import { Sponsorship } from '../view/Sponsorship';
+import { UserGuide } from '../view/UserGuide';
+import { FAQ } from '../view/FAQ';
 
 interface DiscoverMsg {
   ip: string;
@@ -23,10 +32,16 @@ interface DiscoverMsg {
 @Entry
 @ComponentV2
 struct Index {
+  // 页面路由栈
+  @Provider(CommonConstants.PAGE_INFOS) pageInfos: NavPathStack = new NavPathStack();
   @Local serverIp: string = '';
   @Local isPushing: boolean = false;
   @Local isPulling: boolean = false;
   @Local isScanning: boolean = false;
+  @Local isSettingsOpen: boolean = false;
+  @Local colorMode: number = ConfigurationConstant.ColorMode.COLOR_MODE_NOT_SET;
+  @Local manualColorMode: number = ConfigurationConstant.ColorMode.COLOR_MODE_LIGHT;
+  @Local appVersion: string = 'v1.0.0';
   @Local statusMsg: string = '准备就绪';
   @Local clipboardContent: string = '';
   @Local historyList: HistoryItem[] = [];
@@ -84,11 +99,26 @@ struct Index {
       this.pref = await preferences.getPreferences(this.context, 'codeflash_store');
       this.serverIp = await this.pref.get('server_ip', '') as string;
       this.isAutoPushEnabled = await this.pref.get('auto_push', false) as boolean;
-      
+      this.colorMode = await this.pref.get('color_mode', ConfigurationConstant.ColorMode.COLOR_MODE_NOT_SET) as number;
+      this.manualColorMode = await this.pref.get('manual_color_mode', ConfigurationConstant.ColorMode.COLOR_MODE_LIGHT) as number;
+      if (this.colorMode !== ConfigurationConstant.ColorMode.COLOR_MODE_NOT_SET) {
+        this.manualColorMode = this.colorMode;
+      }
+      this.context.getApplicationContext().setColorMode(this.colorMode);
+
       // 加载历史记录
       this.historyList = await HistoryManager.getAll();
     } catch (e) {
       console.error('Failed to load preferences');
+    }
+
+    try {
+      const info = await bundleManager.getBundleInfoForSelf(bundleManager.BundleFlag.GET_BUNDLE_INFO_WITH_APPLICATION);
+      const versionName: string = info.versionName;
+      if (versionName.length > 0) {
+        this.appVersion = `v${versionName}`;
+      }
+    } catch (e) {
     }
 
     // 检测上次连接
@@ -431,6 +461,84 @@ struct Index {
     }
   }
 
+  @Builder SettingsBuilder() {
+    Column(){
+      HdsNavigation(this.pageInfos){
+        SettingsView({
+          currentMode: this.colorMode,
+          manualMode: this.manualColorMode,
+          appVersion: this.appVersion,
+          onModeChange: (mode: number) => {
+            this.colorMode = mode;
+            if (mode !== ConfigurationConstant.ColorMode.COLOR_MODE_NOT_SET) {
+              this.manualColorMode = mode;
+            }
+            this.context.getApplicationContext().setColorMode(mode);
+            if (this.pref) {
+              this.pref.put('color_mode', mode);
+              if (mode !== ConfigurationConstant.ColorMode.COLOR_MODE_NOT_SET) {
+                this.pref.put('manual_color_mode', mode);
+              }
+              this.pref.flush();
+            }
+          },
+          onClose: () => {
+            this.isSettingsOpen = false;
+          },
+          onLinkClick: (title: string) => {
+            // TODO: 处理链接点击，例如跳转到Web页面或显示弹窗
+            promptAction.showToast({ message: `点击了: ${title}` });
+          }
+        })
+      }
+      .titleMode(HdsNavigationTitleMode.MODAL) // 设置显示的HdsNavigation为半模态样式
+      .titleBar({
+        content: {
+          title: {
+            mainTitle: '设置',
+          },
+          menu: {
+            value: [{
+              content: {
+                label: 'modal_cancel',
+                isEnabled: true,
+                type: IconStyleMode.SMALL,
+                action: () => {
+                  this.isSettingsOpen = false
+                  console.info("model cancel");
+                }
+              }
+            }]
+          },
+          subIcon: {
+            content: {
+              label: 'leftIcon',
+              icon:  $r('sys.symbol.gearshape'),
+              isEnabled: false,
+            }
+          },
+        } })
+      .navDestination(this.PagesMap)
+
+    }
+  }
+
+  /**
+   * 页面路由表
+   * @param name 路由名
+   * @param param 携带方法体
+   */
+  @Builder
+  PagesMap(name: string, param?: object) {
+    if (name === RouterUrlConstants.SPONSORSHIP) {
+      Sponsorship()
+    } else if (name === RouterUrlConstants.USER_GUIDE) {
+      UserGuide()
+    } else if (name === RouterUrlConstants.FAQ) {
+      FAQ()
+    }
+  }
+
   build() {
     HdsNavigation() {
       Scroll() {
@@ -478,7 +586,7 @@ struct Index {
       .edgeEffect(EdgeEffect.Spring)
       .padding({
         top: CommonConstants.TITLE_BAR_HEIGHT_FREE + this.topRectHeight + 20,
-      })
+      }).bindSheet(this.isSettingsOpen!!, this.SettingsBuilder(), {showClose: false})
     }
     .titleBar({
       style: {
@@ -539,11 +647,12 @@ struct Index {
         menu: {
           value: [{
             content: {
-              label: this.serverIp ? '已连接' : '未连接',
-              type: TextStyleMode.NORMAL,
+              label: '设置',
+              icon: 'resources/base/media/logo.png',
               isEnabled: true,
-              componentId: this.targetId,
+              componentId: 'settingsMenu',
               action: () => {
+                this.isSettingsOpen = true;
               }
             }
           }]

@@ -53,6 +53,10 @@
       "value": "#333333"
     },
     {
+      "name": "brand",
+      "value": "#2FB04A"
+    },
+    {
       "name": "title_bar_bg",
       "value": "#F5F7FA"
     }
