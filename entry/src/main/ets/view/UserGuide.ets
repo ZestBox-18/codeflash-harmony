@@ -16,7 +16,7 @@ export struct UserGuide {
       Scroll() {
         Column() {
           this.SectionTitle('快速入门')
-          this.GuideCard('1. 电脑端准备', '在你的电脑上下载并运行 CodeFlash 桌面端。确保手机和电脑连接在同一个局域网（同一个 Wi-Fi）下。', $r('sys.symbol.pc'))
+          this.GuideCard('1. 电脑端准备', '在你的电脑上下载并运行 CodeFlash 桌面端 https://codeflash.zestbox.cn/。确保手机和电脑连接在同一个局域网（同一个 Wi-Fi）下。', $r('sys.symbol.pc'))
           this.GuideCard('2. 自动连接', '打开手机端 CodeFlash，应用会自动扫描局域网内的电脑。发现设备后会自动尝试连接。', $r('sys.symbol.airplayaudio'))
           this.GuideCard('3. 手动连接', '如果无法自动连接，可以点击首页的“扫描”图标，手动选择发现的设备。', $r('sys.symbol.plus_circle'))
 

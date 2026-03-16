@@ -209,7 +209,9 @@ export struct SettingsView {
             this.AboutItem('QQ群聊', this.qqGroupId, $r('sys.symbol.person_3'), '#2F80ED', () => {
               this.joinQQGroup();
             })
+            Divider().color($r('app.color.divider_color')).strokeWidth(0.5).padding({ left: 16, right: 16 })
 
+            this.AboutItem('电脑端', 'https://codeflash.zestbox.cn/', $r('sys.symbol.pc'))
           }
           .backgroundColor($r('app.color.block_background'))
           .borderRadius(16)
