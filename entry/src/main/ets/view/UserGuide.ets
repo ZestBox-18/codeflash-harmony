@@ -6,7 +6,7 @@
  * @description: 使用说明页面
  */
 
-import { HdsNavDestination, ScrollEffectType } from "@kit.UIDesignKit";
+import { hdsMaterial, HdsNavDestination, ScrollEffectType } from "@kit.UIDesignKit";
 import { LengthMetrics } from "@kit.ArkUI";
 
 @ComponentV2
@@ -44,24 +44,58 @@ export struct UserGuide {
         end: LengthMetrics.vp(2)
       },
       style: {
+        // 设置导航组件标题栏样式
+        // 标题栏动态模糊样式，包括是否使能滚动动态模糊，动态模糊类型，动态模糊生效的滚动距离等
         scrollEffectOpts: {
           enableScrollEffect: true,
-          scrollEffectType: ScrollEffectType.COMMON_BLUR,
+          scrollEffectType: ScrollEffectType.IMMERSIVE_GRADIENT_BLUR,
           blurEffectiveStartOffset: LengthMetrics.vp(0),
           blurEffectiveEndOffset: LengthMetrics.vp(20)
         },
+        systemMaterialEffect: {
+          materialType: hdsMaterial.MaterialType.ADAPTIVE,
+          materialLevel: hdsMaterial.MaterialLevel.ADAPTIVE
+        },
         originalStyle: {
-          backgroundStyle: { backgroundColor: $r('app.color.page_background') },
+          // 内容区滚动前初始样式设置
+          backgroundStyle: {
+            // 标题栏背板样式设置
+            backgroundColor: $r('app.color.title_bar_bg'),
+          },
           contentStyle: {
-            titleStyle: { mainTitleColor: $r('app.color.text_primary'), subTitleColor: $r('app.color.text_secondary') },
-            backIconStyle: { backgroundColor: $r('app.color.action_bg'), iconColor: $r('app.color.text_primary') }
+            // 标题栏内容区样式设置，包括标题区域，菜单区域，返回按钮区域
+            titleStyle: {
+              mainTitleColor: $r('app.color.text_primary'),
+              subTitleColor: $r('app.color.text_secondary')
+            },
+            menuStyle: {
+              backgroundColor: $r('app.color.action_bg'),
+              iconColor: $r('app.color.text_primary')
+            },
+            backIconStyle: {
+              backgroundColor: $r('app.color.action_bg'),
+              iconColor: $r('app.color.text_primary')
+            }
           }
         },
         scrollEffectStyle: {
-          backgroundStyle: { backgroundColor: $r('app.color.title_bar_bg') },
+          // 内容区滚动超过blurEffectiveEndOffset后样式设置
+          backgroundStyle: {
+            backgroundColor: $r('app.color.title_bar_bg'),
+          },
           contentStyle: {
-            titleStyle: { mainTitleColor: $r('app.color.text_primary'), subTitleColor: $r('app.color.text_secondary') },
-            backIconStyle: { backgroundColor: $r('app.color.action_bg'), iconColor: $r('app.color.text_primary') }
+            titleStyle: {
+              mainTitleColor: $r('app.color.text_primary'),
+              subTitleColor: $r('app.color.text_secondary'),
+            },
+            menuStyle: {
+              backgroundColor: $r('app.color.action_bg'),
+              textColor:  $r('app.color.text_secondary')
+            },
+            backIconStyle: {
+              backgroundColor: $r('app.color.action_bg'),
+              iconColor: $r('app.color.text_primary')
+            }
           }
         }
       },
