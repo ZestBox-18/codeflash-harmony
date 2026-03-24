@@ -1,4 +1,4 @@
-import { ConfigurationConstant, common } from '@kit.AbilityKit';
+import { ConfigurationConstant, common, Want } from '@kit.AbilityKit';
 import { promptAction } from '@kit.ArkUI';
 import { pasteboard } from '@kit.BasicServicesKit';
 import { CommonConstants } from '../constants/CommonConstants';
@@ -217,6 +217,21 @@ export struct SettingsView {
           .borderRadius(16)
           .shadow(ShadowStyle.OUTER_DEFAULT_SM)
           .clip(true)
+
+          Text('粤ICP备2024282649号-2A')
+            .fontSize(12)
+            .fontColor($r('app.color.text_secondary'))
+            .margin({ top: 24 })
+            .width('100%')
+            .textAlign(TextAlign.Center)
+            .onClick(() => {
+              const want: Want = {
+                action: 'ohos.want.action.viewData',
+                entities: ['entity.system.browsable'],
+                uri: 'http://beian.miit.gov.cn/'
+              };
+              this.context.startAbility(want);
+            })
 
         }
         .width('100%')
