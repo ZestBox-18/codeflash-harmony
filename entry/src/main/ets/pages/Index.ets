@@ -11,16 +11,12 @@ import { HistoryItem, HistoryManager } from '../model/History';
 import { DiscoveredDevice } from '../model/Device';
 
 import { LengthMetrics } from '@kit.ArkUI';
-import {
-  hdsMaterial,
-  HdsNavDestination,
-  HdsNavigation,
+import { HdsNavDestination, HdsNavigation,
   HdsNavigationTitleMode,
-  IconStyleMode,
-  ScrollEffectType,
-  TextStyleMode
-} from '@kit.UIDesignKit';
+  IconStyleMode, ScrollEffectType, TextStyleMode } from '@kit.UIDesignKit';
 import { CommonConstants } from '../constants/CommonConstants';
+
+
 
 import { SettingsView } from '../view/SettingsView';
 import { RouterUrlConstants } from '../constants/RouterUrlConstants';
@@ -104,8 +100,7 @@ struct Index {
       this.serverIp = await this.pref.get('server_ip', '') as string;
       this.isAutoPushEnabled = await this.pref.get('auto_push', false) as boolean;
       this.colorMode = await this.pref.get('color_mode', ConfigurationConstant.ColorMode.COLOR_MODE_NOT_SET) as number;
-      this.manualColorMode =
-        await this.pref.get('manual_color_mode', ConfigurationConstant.ColorMode.COLOR_MODE_LIGHT) as number;
+      this.manualColorMode = await this.pref.get('manual_color_mode', ConfigurationConstant.ColorMode.COLOR_MODE_LIGHT) as number;
       if (this.colorMode !== ConfigurationConstant.ColorMode.COLOR_MODE_NOT_SET) {
         this.manualColorMode = this.colorMode;
       }
@@ -466,10 +461,9 @@ struct Index {
     }
   }
 
-  @Builder
-  SettingsBuilder() {
-    Column() {
-      HdsNavigation(this.pageInfos) {
+  @Builder SettingsBuilder() {
+    Column(){
+      HdsNavigation(this.pageInfos){
         SettingsView({
           currentMode: this.colorMode,
           manualMode: this.manualColorMode,
@@ -499,62 +493,6 @@ struct Index {
       }
       .titleMode(HdsNavigationTitleMode.MODAL) // 设置显示的HdsNavigation为半模态样式
       .titleBar({
-        style: {
-          // 设置导航组件标题栏样式
-          // 标题栏动态模糊样式，包括是否使能滚动动态模糊，动态模糊类型，动态模糊生效的滚动距离等
-          scrollEffectOpts: {
-            enableScrollEffect: true,
-            scrollEffectType: ScrollEffectType.IMMERSIVE_GRADIENT_BLUR,
-            blurEffectiveStartOffset: LengthMetrics.vp(0),
-            blurEffectiveEndOffset: LengthMetrics.vp(20)
-          },
-          systemMaterialEffect: {
-            materialType: hdsMaterial.MaterialType.ADAPTIVE,
-            materialLevel: hdsMaterial.MaterialLevel.ADAPTIVE
-          },
-          originalStyle: {
-            // 内容区滚动前初始样式设置
-            backgroundStyle: {
-              // 标题栏背板样式设置
-              backgroundColor: $r('app.color.title_bar_bg'),
-            },
-            contentStyle: {
-              // 标题栏内容区样式设置，包括标题区域，菜单区域，返回按钮区域
-              titleStyle: {
-                mainTitleColor: $r('app.color.text_primary'),
-                subTitleColor: $r('app.color.text_secondary')
-              },
-              menuStyle: {
-                backgroundColor: $r('app.color.action_bg'),
-                iconColor: $r('app.color.text_primary')
-              },
-              backIconStyle: {
-                backgroundColor: $r('app.color.action_bg'),
-                iconColor: $r('app.color.text_primary')
-              }
-            }
-          },
-          scrollEffectStyle: {
-            // 内容区滚动超过blurEffectiveEndOffset后样式设置
-            backgroundStyle: {
-              backgroundColor: $r('app.color.title_bar_bg'),
-            },
-            contentStyle: {
-              titleStyle: {
-                mainTitleColor: $r('app.color.text_primary'),
-                subTitleColor: $r('app.color.text_secondary'),
-              },
-              menuStyle: {
-                backgroundColor: $r('app.color.action_bg'),
-                textColor: this.serverIp ? '#2FB04A' : $r('app.color.text_secondary')
-              },
-              backIconStyle: {
-                backgroundColor: $r('app.color.action_bg'),
-                iconColor: $r('app.color.text_primary')
-              }
-            }
-          }
-        },
         content: {
           title: {
             mainTitle: '设置',
@@ -572,8 +510,14 @@ struct Index {
               }
             }]
           },
-        }
-      })
+          subIcon: {
+            content: {
+              label: 'leftIcon',
+              icon:  $r('sys.symbol.gearshape'),
+              isEnabled: false,
+            }
+          },
+        } })
       .navDestination(this.PagesMap)
 
     }
@@ -642,8 +586,7 @@ struct Index {
       .edgeEffect(EdgeEffect.Spring)
       .padding({
         top: CommonConstants.TITLE_BAR_HEIGHT_FREE + this.topRectHeight + 20,
-      })
-      .bindSheet(this.isSettingsOpen!!, this.SettingsBuilder(), { showClose: false })
+      }).bindSheet(this.isSettingsOpen!!, this.SettingsBuilder(), {showClose: false})
     }
     .titleBar({
       style: {
@@ -651,13 +594,9 @@ struct Index {
         // 标题栏动态模糊样式，包括是否使能滚动动态模糊，动态模糊类型，动态模糊生效的滚动距离等
         scrollEffectOpts: {
           enableScrollEffect: true,
-          scrollEffectType: ScrollEffectType.IMMERSIVE_GRADIENT_BLUR,
+          scrollEffectType: ScrollEffectType.COMMON_BLUR,
           blurEffectiveStartOffset: LengthMetrics.vp(0),
           blurEffectiveEndOffset: LengthMetrics.vp(20)
-        },
-        systemMaterialEffect: {
-          materialType: hdsMaterial.MaterialType.ADAPTIVE,
-          materialLevel: hdsMaterial.MaterialLevel.ADAPTIVE
         },
         originalStyle: {
           // 内容区滚动前初始样式设置

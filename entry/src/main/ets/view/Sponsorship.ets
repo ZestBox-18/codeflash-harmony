@@ -3,10 +3,10 @@
  * @author ZestBox
  * @date 2026-03-13 
  * @version 1.0
- * @description: 
+ * @description:
  */
 
-import { hdsMaterial, HdsNavDestination, ScrollEffectType } from "@kit.UIDesignKit";
+import { HdsNavDestination, ScrollEffectType } from "@kit.UIDesignKit";
 import { LengthMetrics } from "@kit.ArkUI";
 @ComponentV2
 export struct Sponsorship {
@@ -51,64 +51,48 @@ export struct Sponsorship {
       .scrollBar(BarState.Off)
       .edgeEffect(EdgeEffect.Spring)
       .backgroundColor($r('app.color.page_background'))
-    }    
+    }
     .titleBar({
       padding: {
         start: LengthMetrics.vp(20),
         end: LengthMetrics.vp(2)
       },
       style: {
-        // 设置导航组件标题栏样式
-        // 标题栏动态模糊样式，包括是否使能滚动动态模糊，动态模糊类型，动态模糊生效的滚动距离等
         scrollEffectOpts: {
           enableScrollEffect: true,
-          scrollEffectType: ScrollEffectType.IMMERSIVE_GRADIENT_BLUR,
+          scrollEffectType: ScrollEffectType.COMMON_BLUR,
           blurEffectiveStartOffset: LengthMetrics.vp(0),
           blurEffectiveEndOffset: LengthMetrics.vp(20)
         },
-        systemMaterialEffect: {
-          materialType: hdsMaterial.MaterialType.ADAPTIVE,
-          materialLevel: hdsMaterial.MaterialLevel.ADAPTIVE
-        },
         originalStyle: {
-          // 内容区滚动前初始样式设置
           backgroundStyle: {
-            // 标题栏背板样式设置
-            backgroundColor: $r('app.color.title_bar_bg'),
+            backgroundColor: $r('app.color.page_background'),
           },
           contentStyle: {
-            // 标题栏内容区样式设置，包括标题区域，菜单区域，返回按钮区域
-            titleStyle: {
-              mainTitleColor: $r('app.color.text_primary'),
-              subTitleColor: $r('app.color.text_secondary')
-            },
+            titleStyle: { mainTitleColor: $r('sys.color.font_primary'), subTitleColor: $r('sys.color.font_secondary') },
             menuStyle: {
-              backgroundColor: $r('app.color.action_bg'),
-              iconColor: $r('app.color.text_primary')
+              backgroundColor: $r('sys.color.comp_background_tertiary'),
+              iconColor: $r('sys.color.icon_primary')
             },
             backIconStyle: {
-              backgroundColor: $r('app.color.action_bg'),
-              iconColor: $r('app.color.text_primary')
+              backgroundColor: $r('sys.color.comp_background_tertiary'),
+              iconColor: $r('sys.color.icon_primary')
             }
           }
         },
         scrollEffectStyle: {
-          // 内容区滚动超过blurEffectiveEndOffset后样式设置
           backgroundStyle: {
-            backgroundColor: $r('app.color.title_bar_bg'),
+            backgroundColor: $r('sys.color.ohos_id_color_background_transparent'),
           },
           contentStyle: {
-            titleStyle: {
-              mainTitleColor: $r('app.color.text_primary'),
-              subTitleColor: $r('app.color.text_secondary'),
-            },
+            titleStyle: { mainTitleColor: $r('sys.color.font_primary'), subTitleColor: $r('sys.color.font_secondary') },
             menuStyle: {
-              backgroundColor: $r('app.color.action_bg'),
-              textColor:  $r('app.color.text_secondary')
+              backgroundColor: $r('sys.color.comp_background_tertiary'),
+              iconColor: $r('sys.color.icon_primary')
             },
             backIconStyle: {
-              backgroundColor: $r('app.color.action_bg'),
-              iconColor: $r('app.color.text_primary')
+              backgroundColor: $r('sys.color.comp_background_tertiary'),
+              iconColor: $r('sys.color.icon_primary')
             }
           }
         }
