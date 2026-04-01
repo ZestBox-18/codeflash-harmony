@@ -1,8 +1,14 @@
 import { ConfigurationConstant, common, Want } from '@kit.AbilityKit';
 import { promptAction } from '@kit.ArkUI';
 import { pasteboard } from '@kit.BasicServicesKit';
+import { Clog } from 'kite_utils';
 import { CommonConstants } from '../constants/CommonConstants';
 import { RouterUrlConstants } from '../constants/RouterUrlConstants';
+import { GlobalContext } from '../utils/GlobalContext';
+
+
+
+const TAG: string = '[SettingsView]';
 
 @ComponentV2
 export struct SettingsView {
@@ -303,6 +309,19 @@ export struct SettingsView {
         }
         if (text == '常见问题') {
           this.pageInfos.pushPath({ name: RouterUrlConstants.FAQ })
+          return
+        }
+        if (text == '给个好评') {
+          let context = GlobalContext.getContext();
+          // 如下link请填写开发者实际跳转的url
+          let link: string = "https://appgallery.huawei.com/app/detail?id=cn.zestbox.codeFlash&channelId=LAUNCHERSHARE";
+          context.openLink(link, { appLinkingOnly: false })
+            .then(() => {
+              Clog.log(TAG, `Succeeded in opening link.`);
+            })
+            .catch((error: BusinessError) => {
+              Clog.log(TAG, `Failed to open link, code: ${error.code}, message: ${error.message}`);
+            })
           return
         }
         this.onLinkClick(text);

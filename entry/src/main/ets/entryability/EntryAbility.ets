@@ -3,12 +3,14 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 import { window } from '@kit.ArkUI';
 import { CommonConstants } from '../constants/CommonConstants';
 import { dbManagerInit } from '../database/config';
+import { GlobalContext } from '../utils/GlobalContext';
 
 const DOMAIN = 0x0000;
 
 export default class EntryAbility extends UIAbility {
   private windowClass: window.Window | null = null
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
+    GlobalContext.initContext(this.context)
     try {
       this.context.getApplicationContext().setColorMode(ConfigurationConstant.ColorMode.COLOR_MODE_NOT_SET);
       AppStorage.setOrCreate(CommonConstants.CURRENT_COLOR_MODE, this.context.config.colorMode);
