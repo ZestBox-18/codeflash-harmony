@@ -61,6 +61,19 @@ struct Index {
   private udpSocket: socket.UDPSocket | null = null;
   private targetId: string = 'bindMenu'
 
+  // 请求剪切板权限
+  async requestClipboardPermission(): Promise<boolean> {
+    const atManager = abilityAccessCtrl.createAtManager();
+    try {
+      const data = await atManager.requestPermissionsFromUser(getContext(this), ["ohos.permission.READ_PASTEBOARD"]);
+      return data.authResults[0] === 0;
+    } catch (err) {
+      const error = err as BusinessError;
+      console.error("授权失败:", error.message);
+      return false;
+    }
+  }
+
   async aboutToAppear() {
     this.topRectHeight = AppStorage.get(CommonConstants.AVOID_RECT_HEIGHT_TOP) || 0;
     this.bottomRectHeight = AppStorage.get(CommonConstants.AVOID_RECT_HEIGHT_BOTTOM) || 0;
@@ -77,27 +90,6 @@ struct Index {
       AppStorage.setOrCreate(CommonConstants.AVOID_RECT_HEIGHT_BOTTOM, bottomRectHeight);
       this.bottomRectHeight = bottomRectHeight
     }
-
-    pasteboard.getSystemPasteboard().getData((err, pasteData) => {
-      if (!err) {
-        console.log("内容:", pasteData.getPrimaryText());
-      }
-    });
-    const atManager = abilityAccessCtrl.createAtManager();
-    atManager.requestPermissionsFromUser(getContext(this), ["ohos.permission.READ_PASTEBOARD"])
-      .then((data) => {
-        if (data.authResults[0] === 0) {
-          // 授权成功，读取剪贴板
-          pasteboard.getSystemPasteboard().getData((err, pasteData) => {
-            if (!err) {
-              console.log("内容:", pasteData.getPrimaryText());
-            }
-          });
-        }
-      })
-      .catch((err: BusinessError) => {
-        console.error("授权失败:", err.message);
-      });
     // 初始化首选项
     try {
       this.pref = await preferences.getPreferences(this.context, 'codeflash_store');
@@ -128,19 +120,23 @@ struct Index {
 
     // 检测上次连接
     if (this.serverIp) {
-      this.checkConnection(this.serverIp).then((isConnected) => {
+      this.checkConnection(this.serverIp).then(async (isConnected) => {
         if (isConnected) {
           this.statusMsg = `已连接到: ${this.serverIp}`;
           // 自动推送
           if (this.isAutoPushEnabled) {
-            pasteboard.getSystemPasteboard().getData((err, pasteData) => {
-              if (!err && pasteData) {
-                const text = pasteData.getPrimaryText();
-                if (text) {
-                  this.pushToComputer(text);
+            // 先请求权限
+            const granted = await this.requestClipboardPermission();
+            if (granted) {
+              pasteboard.getSystemPasteboard().getData((err, pasteData) => {
+                if (!err && pasteData) {
+                  const text = pasteData.getPrimaryText();
+                  if (text) {
+                    this.pushToComputer(text);
+                  }
                 }
-              }
-            });
+              });
+            }
           }
         } else {
           // 连接失败，清除连接状态并开始扫描
@@ -633,6 +629,9 @@ struct Index {
             },
             onAutoPushChange: (isOn: boolean): void => {
               this.saveAutoPush(isOn)
+            },
+            onRequestPermission: async (): Promise<boolean> => {
+              return await this.requestClipboardPermission()
             }
           })
 

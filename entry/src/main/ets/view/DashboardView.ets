@@ -14,6 +14,7 @@ export struct DashboardView {
   @Event onPull: () => void = () => {};
   @Event onSelectDevice: (ip: string) => void = () => {};
   @Event onAutoPushChange: (isOn: boolean) => void = () => {};
+  @Event onRequestPermission: () => Promise<boolean> = async () => false;
 
   @Local manualIp: string = '';
 
@@ -275,12 +276,16 @@ export struct DashboardView {
             .backgroundColor('#2FB04A')
             .shadow({ radius: 8, color: 'rgba(47, 176, 74, 0.3)', offsetY: 4 })
             .margin({ bottom: 16 })
-            .onClick(() => {
-              pasteboard.getSystemPasteboard().getData((err, pasteData) => {
-                this.onPush(pasteData.getPrimaryText());
-
-                if (!err) console.log("内容:", pasteData.getPrimaryText())
-              });
+            .onClick(async () => {
+              // 先请求权限
+              const granted = await this.onRequestPermission();
+              if (granted) {
+                // 授权成功，读取剪切板
+                pasteboard.getSystemPasteboard().getData((err, pasteData) => {
+                  this.onPush(pasteData.getPrimaryText());
+                  if (!err) console.log("内容:", pasteData.getPrimaryText())
+                });
+              }
             })
 
                
