@@ -5,26 +5,26 @@
         "name": "default",
         "type": "HarmonyOS",
         "material": {
-          "storeFile": "/Users/MyCode/projects/CodeFlash/cer/code_flash.p12",
-          "storePassword": "00000018300E22F843CADB1C368ED8856F3419DB909AE0E2DB120962759FFD9FBBE951CE58351D12",
+          "certpath": "/Users/zestbox/MyCode/projects/CodeFlash/cer/code_flash_debug.cer",
           "keyAlias": "ZestBox",
-          "keyPassword": "00000018E8D5373FB099765B5AB2DE805E3F4F6EDCD5C55315DB9C617D5927D7ED9DD8787162C73A",
+          "keyPassword": "000000182A4C4F1399373217DC37A795FCC9C3C683DB8E06A0DA11D468AEB941DE503F7EC4FB4920",
+          "profile": "/Users/zestbox/MyCode/projects/CodeFlash/cer/code_flash_debugDebug.p7b",
           "signAlg": "SHA256withECDSA",
-          "profile": "/Users/MyCode/projects/CodeFlash/cer/code_flash_debugDebug.p7b",
-          "certpath": "/Users/MyCode/projects/CodeFlash/cer/code_flash_debug.cer"
+          "storeFile": "/Users/zestbox//MyCode/projects/CodeFlash/cer/code_flash.p12",
+          "storePassword": "00000018C79403A36DCF58F67DD626B07C842D11B72A42860B376CF4965D16799DCF97CE31C28610"
         }
       },
       {
         "name": "release",
         "type": "HarmonyOS",
         "material": {
-          "certpath": "/Users/MyCode/projects/CodeFlash/cer/release/code_flash.cer",
+          "certpath": "/Users/zestbox/MyCode/projects/CodeFlash/cer/release/code_flash.cer",
           "keyAlias": "ZestBox",
-          "keyPassword": "000000188BD00424A9EDEC1475D6F76C61FD141228776E0A1610D41B09802380F2C5F009D40B71F3",
-          "profile": "/Users/MyCode/projects/CodeFlash/cer/release/code_flashRelease.p7b",
+          "keyPassword": "00000018DB56990ECB737FD783860DE50904305BCAD616D69280995021A78FBCE0F0A4562D0A9DE4",
+          "profile": "/Users/zestbox/MyCode/projects/CodeFlash/cer/release/code_flashRelease.p7b",
           "signAlg": "SHA256withECDSA",
-          "storeFile": "/Users/MyCode/projects/CodeFlash/cer/code_flash.p12",
-          "storePassword": "00000018ED01CC57CD3B6BC2705917E88CF973EF353950E9512E92146BA69D56FC1CDDE2271634A4"
+          "storeFile": "/Users/zestbox/MyCode/projects/CodeFlash/cer/code_flash.p12",
+          "storePassword": "0000001820EAEA85C0BEFCC74684C6234DB953F26913C4EA7277C0D55EDA4C77160AFA0A3A1AF61F"
         }
       }
     ],
@@ -32,7 +32,7 @@
       {
         "name": "default",
         "signingConfig": "default",
-        "targetSdkVersion": "6.0.2(22)",
+        "targetSdkVersion": "6.1.0(23)",
         "compatibleSdkVersion": "6.0.2(22)",
         "runtimeOS": "HarmonyOS",
         "buildOption": {
