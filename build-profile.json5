@@ -5,26 +5,26 @@
         "name": "default",
         "type": "HarmonyOS",
         "material": {
-          "certpath": "/Users/zestbox/MyCode/projects/CodeFlash/cer/code_flash_debug.cer",
-          "keyAlias": "ZestBox",
-          "keyPassword": "000000182A4C4F1399373217DC37A795FCC9C3C683DB8E06A0DA11D468AEB941DE503F7EC4FB4920",
-          "profile": "/Users/zestbox/MyCode/projects/CodeFlash/cer/code_flash_debugDebug.p7b",
+          "storeFile": "/Users/zestbox/MyCode/projects/CodeFlash/cer/debug/code_flash_debug.p12",
+          "storePassword": "00000018009E9E9B3A9914AC01961098BCDF0D3EDFEAF570A99DF1E9FF2FFCB5045CF6B2213051FA",
+          "keyAlias": "zestbox",
+          "keyPassword": "00000018549E96091B26F82EE4FA78A9CD8BFCB120D41BB6B6CD2F2CD702032186DB95BCD4A18628",
           "signAlg": "SHA256withECDSA",
-          "storeFile": "/Users/zestbox//MyCode/projects/CodeFlash/cer/code_flash.p12",
-          "storePassword": "00000018C79403A36DCF58F67DD626B07C842D11B72A42860B376CF4965D16799DCF97CE31C28610"
+          "profile": "/Users/zestbox/MyCode/projects/CodeFlash/cer/debug/code_flash_debugDebug.p7b",
+          "certpath": "/Users/zestbox/MyCode/projects/CodeFlash/cer/debug/code_flash_debug.cer"
         }
       },
       {
         "name": "release",
         "type": "HarmonyOS",
         "material": {
-          "certpath": "/Users/zestbox/MyCode/projects/CodeFlash/cer/release/code_flash.cer",
-          "keyAlias": "ZestBox",
-          "keyPassword": "00000018DB56990ECB737FD783860DE50904305BCAD616D69280995021A78FBCE0F0A4562D0A9DE4",
-          "profile": "/Users/zestbox/MyCode/projects/CodeFlash/cer/release/code_flashRelease.p7b",
+          "storeFile": "/Users/zestbox/MyCode/projects/CodeFlash/cer/release/code_flash_release.p12",
+          "storePassword": "00000018CEFC7338216714FE6596A222B6019B48FFC95B15D7524D6791CE9FBF893981E22C778F3E",
+          "keyAlias": "zestbox",
+          "keyPassword": "000000180A8659A7981AE57805056046F67F118510E363B0FD844F018F7505BBCBB872C4E5FA710B",
           "signAlg": "SHA256withECDSA",
-          "storeFile": "/Users/zestbox/MyCode/projects/CodeFlash/cer/code_flash.p12",
-          "storePassword": "0000001820EAEA85C0BEFCC74684C6234DB953F26913C4EA7277C0D55EDA4C77160AFA0A3A1AF61F"
+          "profile": "/Users/zestbox/MyCode/projects/CodeFlash/cer/release/code_flash_releaseRelease.p7b",
+          "certpath": "/Users/zestbox/MyCode/projects/CodeFlash/cer/release/code_flash_release.cer"
         }
       }
     ],
@@ -64,7 +64,8 @@
           ]
         }
       ]
-    }, {
+    },
+    {
       "name": "kite_utils",
       "srcPath": "./kite_utils"
     }
