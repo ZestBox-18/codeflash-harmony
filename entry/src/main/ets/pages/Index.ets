@@ -12,16 +12,13 @@ import { DiscoveredDevice } from '../model/Device';
 
 import { LengthMetrics } from '@kit.ArkUI';
 import {
-  HdsNavDestination,
   HdsNavigation,
   HdsNavigationTitleMode,
   IconStyleMode,
-  ScrollEffectType,
-  TitleBarStyleOptions,
   TextStyleMode
 } from '@kit.UIDesignKit';
 import { CommonConstants } from '../constants/CommonConstants';
-import { deviceInfo } from '@kit.BasicServicesKit';
+import { TitleBarStyleHelper } from '../utils/TitleBarStyleHelper'; // 统一管理 API22 / API23 标题栏兼容逻辑
 
 import { SettingsView } from '../view/SettingsView';
 import { RouterUrlConstants } from '../constants/RouterUrlConstants';
@@ -61,174 +58,6 @@ struct Index {
   private pullHttpRequest: http.HttpRequest | null = null;
   private udpSocket: socket.UDPSocket | null = null;
   private targetId: string = 'bindMenu'
-
-  private getSettingsTitleBarStyleApi22(): TitleBarStyleOptions {
-    return {
-      scrollEffectOpts: {
-        enableScrollEffect: true,
-        scrollEffectType: ScrollEffectType.COMMON_BLUR,
-        blurEffectiveStartOffset: LengthMetrics.vp(0),
-        blurEffectiveEndOffset: LengthMetrics.vp(20)
-      },
-      originalStyle: {
-        backgroundStyle: { backgroundColor: $r('app.color.page_background') },
-        contentStyle: {
-          titleStyle: { mainTitleColor: $r('app.color.text_primary'), subTitleColor: $r('app.color.text_secondary') },
-          menuStyle: {
-            backgroundColor: $r('app.color.action_bg'),
-            textColor: $r('app.color.text_secondary'),
-            iconColor: $r('app.color.text_primary')
-          },
-          backIconStyle: { backgroundColor: $r('app.color.action_bg'), iconColor: $r('app.color.text_primary') },
-          subIconStyle: {
-            iconColor: $r('app.color.text_primary')
-          }
-        }
-      },
-      scrollEffectStyle: {
-        backgroundStyle: {
-          backgroundColor: $r('app.color.title_bar_bg'),
-        },
-        contentStyle: {
-          titleStyle: {
-            mainTitleColor: $r('app.color.text_primary'),
-            subTitleColor: $r('app.color.text_secondary')
-          },
-          menuStyle: {
-            backgroundColor: $r('app.color.action_bg'),
-            textColor: $r('app.color.text_secondary'),
-            iconColor: $r('app.color.text_primary')
-          },
-          backIconStyle: {
-            backgroundColor: $r('app.color.action_bg'),
-            iconColor: $r('app.color.text_primary')
-          },
-          subIconStyle: {
-            iconColor: $r('app.color.text_primary')
-          }
-        }
-      }
-    }
-  }
-
-  private getSettingsTitleBarStyleApi23(): TitleBarStyleOptions {
-    return {
-      scrollEffectOpts: {
-        enableScrollEffect: true,
-        scrollEffectType: ScrollEffectType.IMMERSIVE_GRADIENT_BLUR,
-        blurEffectiveStartOffset: LengthMetrics.vp(0),
-        blurEffectiveEndOffset: LengthMetrics.vp(20)
-      },
-      originalStyle: {
-        backgroundStyle: { backgroundColor: $r('app.color.title_bar_bg') },
-        contentStyle: {
-          titleStyle: { mainTitleColor: $r('app.color.text_primary'), subTitleColor: $r('app.color.text_secondary') },
-          menuStyle: {
-            backgroundColor: $r('app.color.action_bg'),
-            textColor: $r('app.color.text_secondary'),
-            iconColor: $r('app.color.text_primary')
-          },
-          backIconStyle: { backgroundColor: $r('app.color.action_bg'), iconColor: $r('app.color.text_primary') },
-          subIconStyle: { iconColor: $r('app.color.text_primary') }
-        }
-      },
-      scrollEffectStyle: {
-        backgroundStyle: { backgroundColor: $r('app.color.title_bar_bg') },
-        contentStyle: {
-          titleStyle: { mainTitleColor: $r('app.color.text_primary'), subTitleColor: $r('app.color.text_secondary') },
-          menuStyle: {
-            backgroundColor: $r('app.color.action_bg'),
-            textColor: $r('app.color.text_secondary'),
-            iconColor: $r('app.color.text_primary')
-          },
-          backIconStyle: { backgroundColor: $r('app.color.action_bg'), iconColor: $r('app.color.text_primary') },
-          subIconStyle: { iconColor: $r('app.color.text_primary') }
-        }
-      }
-    }
-  }
-
-  private getMainTitleBarStyleApi22(): TitleBarStyleOptions {
-    return {
-      scrollEffectOpts: {
-        enableScrollEffect: true,
-        scrollEffectType: ScrollEffectType.COMMON_BLUR,
-        blurEffectiveStartOffset: LengthMetrics.vp(0),
-        blurEffectiveEndOffset: LengthMetrics.vp(20)
-      },
-      originalStyle: {
-        backgroundStyle: { backgroundColor: $r('app.color.page_background') },
-        contentStyle: {
-          titleStyle: { mainTitleColor: $r('app.color.text_primary'), subTitleColor: $r('app.color.text_secondary') },
-          menuStyle: {
-            backgroundColor: $r('app.color.action_bg'),
-            textColor: this.serverIp ? '#2FB04A' : $r('app.color.text_secondary')
-          },
-          backIconStyle: { backgroundColor: $r('app.color.action_bg'), iconColor: $r('app.color.text_primary') }
-        }
-      },
-      scrollEffectStyle: {
-        backgroundStyle: { backgroundColor: $r('app.color.title_bar_bg') },
-        contentStyle: {
-          titleStyle: { mainTitleColor: $r('app.color.text_primary'), subTitleColor: $r('app.color.text_secondary') },
-          menuStyle: {
-            backgroundColor: $r('app.color.action_bg'),
-            textColor: this.serverIp ? '#2FB04A' : $r('app.color.text_secondary')
-          },
-          backIconStyle: { backgroundColor: $r('app.color.action_bg'), iconColor: $r('app.color.text_primary') }
-        }
-      }
-    }
-  }
-
-  private getMainTitleBarStyleApi23(): TitleBarStyleOptions {
-    return {
-      scrollEffectOpts: {
-        enableScrollEffect: true,
-        scrollEffectType: ScrollEffectType.IMMERSIVE_GRADIENT_BLUR,
-        blurEffectiveStartOffset: LengthMetrics.vp(0),
-        blurEffectiveEndOffset: LengthMetrics.vp(20)
-      },
-      originalStyle: {
-        backgroundStyle: {
-          backgroundColor: $r('app.color.title_bar_bg'),
-        },
-        contentStyle: {
-          titleStyle: {
-            mainTitleColor: $r('app.color.text_primary'),
-            subTitleColor: $r('app.color.text_secondary')
-          },
-          menuStyle: {
-            backgroundColor: $r('app.color.action_bg'),
-            textColor: this.serverIp ? '#2FB04A' : $r('app.color.text_secondary')
-          },
-          backIconStyle: {
-            backgroundColor: $r('app.color.action_bg'),
-            iconColor: $r('app.color.text_primary')
-          }
-        }
-      },
-      scrollEffectStyle: {
-        backgroundStyle: {
-          backgroundColor: $r('app.color.title_bar_bg'),
-        },
-        contentStyle: {
-          titleStyle: {
-            mainTitleColor: $r('app.color.text_primary'),
-            subTitleColor: $r('app.color.text_secondary'),
-          },
-          menuStyle: {
-            backgroundColor: $r('app.color.action_bg'),
-            textColor: this.serverIp ? '#2FB04A' : $r('app.color.text_secondary')
-          },
-          backIconStyle: {
-            backgroundColor: $r('app.color.action_bg'),
-            iconColor: $r('app.color.text_primary')
-          }
-        }
-      }
-    }
-  }
 
   // 请求剪切板权限
   async requestClipboardPermission(): Promise<boolean> {
@@ -664,7 +493,8 @@ struct Index {
       }
       .titleMode(HdsNavigationTitleMode.MODAL) // 设置显示的HdsNavigation为半模态样式
       .titleBar({
-        style: deviceInfo.sdkApiVersion > 22 ? this.getSettingsTitleBarStyleApi23() : this.getSettingsTitleBarStyleApi22(),
+        // 设置页标题栏兼容样式由 helper 统一处理，避免页面自行维护 API22/23 分支
+        style: TitleBarStyleHelper.getSettingsStyle(),
         content: {
           title: {
             mainTitle: '设置',
@@ -765,7 +595,8 @@ struct Index {
       .bindSheet(this.isSettingsOpen!!, this.SettingsBuilder(), { showClose: false })
     }
     .titleBar({
-      style: deviceInfo.sdkApiVersion > 22 ? this.getMainTitleBarStyleApi23() : this.getMainTitleBarStyleApi22(),
+      // 主页标题栏兼容样式由 helper 统一处理；连接状态颜色仅由页面透传，不放入兼容层
+      style: TitleBarStyleHelper.getMainStyle(this.serverIp ? '#2FB04A' : $r('app.color.text_secondary')),
       content: {
         // 标题栏内容设置
         title: { mainTitle: 'CodeFlash', subTitle: '剪贴板同步工具' },

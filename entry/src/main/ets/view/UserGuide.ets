@@ -6,68 +6,12 @@
  * @description: 使用说明页面
  */
 
-import { hdsMaterial, HdsNavDestination, ScrollEffectType, TitleBarStyleOptions } from "@kit.UIDesignKit";
+import { HdsNavDestination } from "@kit.UIDesignKit";
 import { LengthMetrics } from "@kit.ArkUI";
-import { deviceInfo } from "@kit.BasicServicesKit";
+import { TitleBarStyleHelper } from '../utils/TitleBarStyleHelper'; // 使用统一的标题栏样式兼容工具
 
 @ComponentV2
 export struct UserGuide {
-  private getTitleBarStyleApi22(): TitleBarStyleOptions {
-    return {
-      scrollEffectOpts: {
-        enableScrollEffect: true,
-        scrollEffectType: ScrollEffectType.COMMON_BLUR,
-        blurEffectiveStartOffset: LengthMetrics.vp(0),
-        blurEffectiveEndOffset: LengthMetrics.vp(20)
-      },
-      originalStyle: {
-        backgroundStyle: { backgroundColor: $r('app.color.page_background') },
-        contentStyle: {
-          titleStyle: { mainTitleColor: $r('app.color.text_primary'), subTitleColor: $r('app.color.text_secondary') },
-          backIconStyle: { backgroundColor: $r('app.color.action_bg'), iconColor: $r('app.color.text_primary') }
-        }
-      },
-      scrollEffectStyle: {
-        backgroundStyle: { backgroundColor: $r('app.color.title_bar_bg') },
-        contentStyle: {
-          titleStyle: { mainTitleColor: $r('app.color.text_primary'), subTitleColor: $r('app.color.text_secondary') },
-          backIconStyle: { backgroundColor: $r('app.color.action_bg'), iconColor: $r('app.color.text_primary') }
-        }
-      }
-    }
-  }
-
-  private getTitleBarStyleApi23(): TitleBarStyleOptions {
-    return {
-      scrollEffectOpts: {
-        enableScrollEffect: true,
-        scrollEffectType: ScrollEffectType.IMMERSIVE_GRADIENT_BLUR,
-        blurEffectiveStartOffset: LengthMetrics.vp(0),
-        blurEffectiveEndOffset: LengthMetrics.vp(20)
-      },
-      systemMaterialEffect: {
-        materialType: hdsMaterial.MaterialType.ADAPTIVE,
-        materialLevel: hdsMaterial.MaterialLevel.ADAPTIVE
-      },
-      originalStyle: {
-        backgroundStyle: { backgroundColor: $r('app.color.title_bar_bg') },
-        contentStyle: {
-          titleStyle: { mainTitleColor: $r('app.color.text_primary'), subTitleColor: $r('app.color.text_secondary') },
-          menuStyle: { backgroundColor: $r('app.color.action_bg'), iconColor: $r('app.color.text_primary') },
-          backIconStyle: { backgroundColor: $r('app.color.action_bg'), iconColor: $r('app.color.text_primary') }
-        }
-      },
-      scrollEffectStyle: {
-        backgroundStyle: { backgroundColor: $r('app.color.title_bar_bg') },
-        contentStyle: {
-          titleStyle: { mainTitleColor: $r('app.color.text_primary'), subTitleColor: $r('app.color.text_secondary') },
-          menuStyle: { backgroundColor: $r('app.color.action_bg'), textColor: $r('app.color.text_secondary') },
-          backIconStyle: { backgroundColor: $r('app.color.action_bg'), iconColor: $r('app.color.text_primary') }
-        }
-      }
-    }
-  }
-
   build() {
     HdsNavDestination() {
       Scroll() {
@@ -100,7 +44,8 @@ export struct UserGuide {
         start: LengthMetrics.vp(20),
         end: LengthMetrics.vp(2)
       },
-      style: deviceInfo.sdkApiVersion > 22 ? this.getTitleBarStyleApi23() : this.getTitleBarStyleApi22(),
+      // 目标页标题栏样式统一由 helper 生成，页面不再单独维护 API22/23 差异
+      style: TitleBarStyleHelper.getDestinationStyle(),
       content: { title: { mainTitle: "使用说明" } }
     })
   }
